@@ -1,10 +1,13 @@
 import Chart from 'chart.js';
+
+import colorLib from '@kurkle/color';
+
 //
 // Chart extension for making the bars rounded
 // Code from: https://codepen.io/jedtrow/full/ygRYgo
 //
 
-Chart.elements.Rectangle.prototype.draw = function() {
+Chart.elements.Rectangle.prototype.draw = function () {
   var ctx = this._chart.ctx;
   var vm = this._view;
   var left, right, top, bottom, signX, signY, borderSkipped, radius;
@@ -157,6 +160,21 @@ var colors = {
   transparent: 'transparent',
 };
 
+export const CHART_COLORS = {
+  red: 'rgb(255, 99, 132)',
+  orange: 'rgb(255, 159, 64)',
+  yellow: 'rgb(255, 205, 86)',
+  green: 'rgb(75, 192, 192)',
+  blue: 'rgb(54, 162, 235)',
+  purple: 'rgb(153, 102, 255)',
+  grey: 'rgb(201, 203, 207)'
+};
+
+export function transparentize(value, opacity) {
+  var alpha = opacity === undefined ? 0.5 : 1 - opacity;
+  return colorLib(value).alpha(alpha).rgbString();
+}
+
 export function chartOptions() {
 
   // Options
@@ -173,7 +191,6 @@ export function chartOptions() {
           padding: 0
         },
         legend: {
-          display: false,
           position: 'bottom',
           labels: {
             usePointStyle: true,
@@ -198,7 +215,7 @@ export function chartOptions() {
           arc: {
             backgroundColor: colors.theme['primary'],
             borderColor: (mode == 'dark') ? colors.gray[800] : colors.white,
-            borderWidth: 4
+            borderWidth: 2
           }
         },
         tooltips: {
@@ -209,11 +226,11 @@ export function chartOptions() {
       },
       doughnut: {
         cutoutPercentage: 83,
-        legendCallback: function(chart) {
+        legendCallback: function (chart) {
           var data = chart.data;
           var content = '';
 
-          data.labels.forEach(function(label, index) {
+          data.labels.forEach(function (label, index) {
             var bgColor = data.datasets[0].backgroundColor[index];
 
             content += '<span class="chart-legend-item">';
@@ -227,6 +244,9 @@ export function chartOptions() {
       }
     }
   }
+
+  Chart.defaults.polarArea.scale.ticks = { backdropColor: 'transparent' };
+  Chart.defaults.radar.scale.ticks = { backdropColor: 'transparent' };
 
   // yAxes
   Chart.scaleService.updateScaleDefaults('linear', {
@@ -246,7 +266,7 @@ export function chartOptions() {
     ticks: {
       beginAtZero: true,
       padding: 10,
-      callback: function(value) {
+      callback: function (value) {
         if (!(value % 10)) {
           return value
         }
@@ -265,7 +285,7 @@ export function chartOptions() {
       padding: 20
     },
     datasets: [{
-        maxBarThickness: 10
+      maxBarThickness: 10
     }]
   });
 
@@ -274,17 +294,20 @@ export function chartOptions() {
 }
 
 export const parseOptions = (parent, options) => {
-		for (var item in options) {
-			if (typeof options[item] !== 'object') {
-				parent[item] = options[item];
-			} else {
-				parseOptions(parent[item], options[item]);
-			}
-		}
-	}
+  for (var item in options) {
+    if (typeof options[item] !== 'object') {
+      parent[item] = options[item];
+    } else {
+      parseOptions(parent[item], options[item]);
+    }
+  }
+}
 
 export const chartExample1 = {
   options: {
+    legend: {
+      display: false
+    },
     scales: {
       yAxes: [{
         gridLines: {
@@ -293,7 +316,7 @@ export const chartExample1 = {
           drawOnChartArea: false
         },
         ticks: {
-          callback: function(value) {
+          callback: function (value) {
             if (!(value % 10)) {
               return '$' + value + 'k';
             }
@@ -309,15 +332,20 @@ export const chartExample1 = {
       data: [0, 20, 10, 30, 15, 40, 20, 60, 60]
     }]
   }
-}
+};
 
 export const chartExample2 = {
   options: {
+    plugins: {
+      legend: {
+        display: false
+      }
+    },
     scales: {
       yAxes: [
         {
           ticks: {
-            callback: function(value) {
+            callback: function (value) {
               if (!(value % 10)) {
                 //return '$' + value + 'k'
                 return value;
@@ -329,7 +357,7 @@ export const chartExample2 = {
     },
     tooltips: {
       callbacks: {
-        label: function(item, data) {
+        label: function (item, data) {
           var label = data.datasets[item.datasetIndex].label || "";
           var yLabel = item.yLabel;
           var content = "";
@@ -352,4 +380,4 @@ export const chartExample2 = {
       }
     ]
   }
-}
+};

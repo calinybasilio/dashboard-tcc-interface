@@ -5,6 +5,11 @@ export const mapLocalitiesName = {
     [ELocalities.MONTEVIDEO]: 'Montevideo'
 };
 
+export const mapLocalitiesInitials = {
+    [ELocalities.BELO_HORIZONTE]: 'BH',
+    [ELocalities.MONTEVIDEO]: 'MV'
+};
+
 const COLORS = [
     '#4dc9f6',
     '#f67019',
