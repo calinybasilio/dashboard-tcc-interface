@@ -4,7 +4,7 @@ import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from
 import { UserService } from '../services/user.service';
 
 @Injectable()
-export class DashboardGuard implements CanActivate {
+export class AuthenticatedGuard implements CanActivate {
     constructor(
         private readonly _router: Router,
         private readonly _userService: UserService
@@ -14,7 +14,7 @@ export class DashboardGuard implements CanActivate {
         if (this._userService.isAuthenticated()) {
             return true;
         }
-        this._router.navigate(['/auth/login']);
+        this._router.navigate(['/login']);
         return false;
     }
 }
