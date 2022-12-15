@@ -21,7 +21,7 @@ export class DashboardService {
         const wordsFrequencyArray = filters.localityId === ELocalities.BELO_HORIZONTE ?
             words_frequency_bh : words_frequency_mv;
 
-        wordsFrequencyArray.slice(0, 10).forEach((word: {
+        wordsFrequencyArray.slice(0, 20).forEach((word: {
             count: number, word: string;
         }) => {
             datasetReturn.labels.push(word.word);
@@ -74,6 +74,15 @@ export class DashboardService {
         };
 
         return of(result);
+    }
+
+    wordsRegisters(filter: {page: number; pageSize: number}): Observable<any> {
+        const words = words_frequency_bh.map((country, i) => ({ id: i + 1, ...country })).slice(
+			(filter.page - 1) * filter.pageSize,
+			(filter.page - 1) * filter.pageSize + filter.pageSize,
+		);
+
+        return of({rows: words, count: words_frequency_bh.length});
     }
 
 }

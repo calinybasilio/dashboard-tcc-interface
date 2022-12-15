@@ -30,9 +30,16 @@ export class DashboardComponent implements OnInit {
   public clicked: boolean = true;
   public clicked1: boolean = false;
 
+  pageTableWords = 1;
+	pageSizeTableWords = 4;
+	collectionSizeTableWords = 0;
+	words: any[] = [];
+
   constructor(
     private readonly dashboardService: DashboardService
-  ) { }
+  ) {
+    this.refreshWords();
+  }
 
   ngOnInit() {
     parseOptions(Chart, chartOptions());
@@ -128,5 +135,17 @@ export class DashboardComponent implements OnInit {
   changeLocalityWordsFrequencyChart(localityId: number) {
     this.loadWordFrequencyChartData({ localityId })
   }
+
+  refreshWords() {
+		this.dashboardService.wordsRegisters({page: this.pageTableWords, pageSize: this.pageSizeTableWords}).subscribe({
+      next: (result) => {
+        this.words = result.rows;
+        this.collectionSizeTableWords = result.count;
+      },
+      error: () => {
+
+      }
+    });
+	}
 
 }
