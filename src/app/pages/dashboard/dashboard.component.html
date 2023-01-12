@@ -284,12 +284,14 @@
           <table class="table align-items-center table-flush">
             <thead class="thead-light">
               <tr>
+                <th scope="col">Nome</th>
                 <th scope="col">Usuário (@)</th>
                 <th scope="col">Cidade</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let journalist of journalists">
+                <td>{{ journalist.name }}</td>
                 <td>{{ journalist.user }}</td>
                 <th>{{ mapLocalitiesName[journalist.locality_id]}}</th>
               </tr>
