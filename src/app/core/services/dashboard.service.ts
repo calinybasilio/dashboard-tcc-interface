@@ -143,4 +143,15 @@ export class DashboardService {
 
     return of({ rows: words, count: words_frequency_tweets_bh.length });
   }
+
+  journalistsRegisters(filter: { page: number; pageSize: number }): Observable<any> {
+    const users_filtered = users
+      .map((country, i) => ({ id: i + 1, ...country }))
+      .slice(
+        (filter.page - 1) * filter.pageSize,
+        (filter.page - 1) * filter.pageSize + filter.pageSize
+      );
+
+    return of({ rows: users_filtered, count: users.length });
+  }
 }

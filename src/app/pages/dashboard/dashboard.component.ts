@@ -37,14 +37,20 @@ export class DashboardComponent implements OnInit {
   public clickedLocalityMvLikes: boolean = false;
 
   pageTableWords = 1;
-	pageSizeTableWords = 4;
+	pageSizeTableWords = 5;
 	collectionSizeTableWords = 0;
 	words: any[] = [];
+
+  pageTableJournalists = 1;
+	pageSizeTableJournalists = 5;
+	collectionSizeTableJournalists = 0;
+	journalists: any[] = [];
 
   constructor(
     private readonly dashboardService: DashboardService
   ) {
     this.refreshWords();
+    this.refreshJournalists();
   }
 
   ngOnInit() {
@@ -226,6 +232,16 @@ export class DashboardComponent implements OnInit {
       error: () => {
 
       }
+    });
+	}
+
+  refreshJournalists() {
+		this.dashboardService.journalistsRegisters({page: this.pageTableJournalists, pageSize: this.pageSizeTableJournalists}).subscribe({
+      next: (result) => {
+        this.journalists = result.rows;
+        this.collectionSizeTableJournalists = result.count;
+      },
+      error: () => {}
     });
 	}
 
