@@ -8,8 +8,6 @@ import { DashboardService } from 'src/app/core/services/dashboard.service';
 import {
   chartOptions,
   parseOptions,
-  chartExample1,
-  chartExample2
 } from "../../variables/charts";
 
 @Component({
@@ -25,10 +23,18 @@ export class DashboardComponent implements OnInit {
   public mapLocalitiesInitials = mapLocalitiesInitials;
 
   public wordsChart;
+  public wordsReplysChart;
+  public wordsLikesChart;
   public numberJournalistsChart;
 
-  public clicked: boolean = true;
-  public clicked1: boolean = false;
+  public clickedLocalityBhTweets: boolean = true;
+  public clickedLocalityMvTweets: boolean = false;
+
+  public clickedLocalityBhReplys: boolean = true;
+  public clickedLocalityMvReplys: boolean = false;
+
+  public clickedLocalityBhLikes: boolean = true;
+  public clickedLocalityMvLikes: boolean = false;
 
   pageTableWords = 1;
 	pageSizeTableWords = 4;
@@ -45,23 +51,32 @@ export class DashboardComponent implements OnInit {
     parseOptions(Chart, chartOptions());
 
     const filters = { localityId: ELocalities.BELO_HORIZONTE };
-    this.loadWordFrequencyChartData(filters);
-
+    this.loadWordFrequencyTweetsChartData(filters);
+    this.loadWordFrequencyReplysChartData(filters);
+    this.loadWordFrequencyLikesChartData(filters);
     this.loadNumberJournalistsByLocationChartData();
   }
-
-  private loadWordFrequencyChartData(filters) {
+  
+  private loadWordFrequencyTweetsChartData(filters) {
     if (this.wordsChart) {
       this.wordsChart.destroy();
     }
 
     var chartWordsReference = document.getElementById('chart-words');
 
-    this.dashboardService.wordFrequencyPolarArea(filters).subscribe({
+    this.dashboardService.wordFrequencyTweets(filters).subscribe({
       next: (result) => {
         this.wordsChart = new Chart(chartWordsReference, {
-          type: 'polarArea',
+          type: 'bar',
           options: {
+            plugins: {
+              legend: {
+                display: true,
+              },
+              title: {
+                display: false
+              }
+            },
             scales: {
               r: {
                 pointLabels: {
@@ -73,6 +88,31 @@ export class DashboardComponent implements OnInit {
                 }
               }
             },
+          },
+          data: result
+        });
+      },
+      error: () => {
+
+      }
+    });
+  }
+
+  private loadWordFrequencyReplysChartData(filters) {
+    if (this.wordsReplysChart) {
+      this.wordsReplysChart.destroy();
+    }
+
+    var chartWordsReplysReference = document.getElementById('chart-words-replys');
+
+    this.dashboardService.wordFrequencyReplys(filters).subscribe({
+      next: (result) => {
+        this.wordsReplysChart = new Chart(chartWordsReplysReference, {
+          type: 'bar',
+          data: result,
+          options: {
+            indexAxis: 'y',
+            responsive: true,
             plugins: {
               legend: {
                 display: true,
@@ -80,9 +120,42 @@ export class DashboardComponent implements OnInit {
               title: {
                 display: false
               }
-            }
-          },
-          data: result
+            },
+            
+          }
+        });
+      },
+      error: () => {
+
+      }
+    });
+  }
+
+  private loadWordFrequencyLikesChartData(filters) {
+    if (this.wordsLikesChart) {
+      this.wordsLikesChart.destroy();
+    }
+
+    var chartWordsLikesReference = document.getElementById('chart-words-likes');
+
+    this.dashboardService.wordFrequencyLikes(filters).subscribe({
+      next: (result) => {
+        this.wordsLikesChart = new Chart(chartWordsLikesReference, {
+          type: 'bar',
+          data: result,
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: {
+              legend: {
+                display: true,
+              },
+              title: {
+                display: false
+              }
+            },
+            
+          }
         });
       },
       error: () => {
@@ -132,8 +205,16 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  changeLocalityWordsFrequencyChart(localityId: number) {
-    this.loadWordFrequencyChartData({ localityId })
+  changeLocalityWordsFrequencyTweetsChart(localityId: number) {
+    this.loadWordFrequencyTweetsChartData({ localityId });
+  }
+
+  changeLocalityWordsFrequencyReplysChart(localityId: number) {
+    this.loadWordFrequencyReplysChartData({ localityId });
+  }
+
+  changeLocalityWordsFrequencyLikesChart(localityId: number) {
+    this.loadWordFrequencyLikesChartData({ localityId });
   }
 
   refreshWords() {

@@ -2,7 +2,7 @@ import { ELocalities } from './enums/localities.enum';
 
 export const mapLocalitiesName = {
     [ELocalities.BELO_HORIZONTE]: 'Belo Horizonte',
-    [ELocalities.MONTEVIDEO]: 'Montevideo'
+    [ELocalities.MONTEVIDEO]: 'Montevidéu'
 };
 
 export const mapLocalitiesInitials = {
