@@ -1,11 +1,3 @@
-ngb-pagination li {
-    &:first-child a {
-        span {
-            display: none;
-        }
 
-        &:before {
-            /* provide your content here */
-        }
-    }
+ngb-pagination {
 }

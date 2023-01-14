@@ -36,6 +36,7 @@ export class DashboardComponent implements OnInit {
   public clickedLocalityBhLikes: boolean = true;
   public clickedLocalityMvLikes: boolean = false;
 
+  public maxSizePaginationOptions = 2;
   pageTableWords = 1;
 	pageSizeTableWords = 5;
 	collectionSizeTableWords = 0;
@@ -180,29 +181,29 @@ export class DashboardComponent implements OnInit {
     this.dashboardService.numberJournalistsByLocationBar().subscribe({
       next: (result) => {
         this.numberJournalistsChart = new Chart(chartNumberJournalistsReference, {
-          type: 'bar',
+          type: 'pie',
+          data: result,
           options: {
             plugins: {
               legend: {
+                display: true,
+              },
+              title: {
                 display: false
               }
             },
-            tooltips: {
-              callbacks: {
-                label: function (item, data) {
-                  var label = data.datasets[item.datasetIndex].label || "";
-                  var yLabel = item.yLabel;
-                  var content = "";
-                  if (data.datasets.length > 1) {
-                    content += label;
-                  }
-                  content += yLabel;
-                  return content;
+            scales: {
+              r: {
+                pointLabels: {
+                  display: true,
+                  centerPointLabels: true,
+                  font: {
+                    size: 24
+                  },
                 }
               }
-            }
+            },
           },
-          data: result
         });
       },
       error: () => {

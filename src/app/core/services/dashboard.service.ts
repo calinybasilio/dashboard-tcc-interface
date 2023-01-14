@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
-import { mapLocalitiesName } from "../consts";
+import { CHART_COLORS, mapLocalitiesName } from "../consts";
 import { ELocalities } from "../enums/localities.enum";
 import {
   users,
@@ -126,6 +126,7 @@ export class DashboardService {
         {
           label: "Jornalistas",
           data: [countBh, countMv],
+          backgroundColor: [CHART_COLORS.orange]
         },
       ],
     };
@@ -144,7 +145,10 @@ export class DashboardService {
     return of({ rows: words, count: words_frequency_tweets_bh.length });
   }
 
-  journalistsRegisters(filter: { page: number; pageSize: number }): Observable<any> {
+  journalistsRegisters(filter: {
+    page: number;
+    pageSize: number;
+  }): Observable<any> {
     const users_filtered = users
       .map((country, i) => ({ id: i + 1, ...country }))
       .slice(
