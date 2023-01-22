@@ -1,7 +1,10 @@
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
+import { environment } from "src/environments/environment";
 import { CHART_COLORS, mapLocalitiesName } from "../consts";
 import { ELocalities } from "../enums/localities.enum";
+import { IFilterIncidenceOfWordsPerJournalists } from "../interfaces/filter-incidence-of-words-per-journalists.interface";
 import {
   users,
   words_frequency_likes_bh,
@@ -9,42 +12,23 @@ import {
   words_frequency_replys_bh,
   words_frequency_replys_mv,
   words_frequency_tweets_bh,
-  words_frequency_tweets_mv,
 } from "../mock/consts";
 
 @Injectable({
   providedIn: "root",
 })
 export class DashboardService {
-  constructor() {}
+  private readonly _BASE_URL = `${environment.apiUrl}/dashboard`;
 
-  wordFrequencyTweets(filters): Observable<any> {
-    const datasetReturn = {
-      labels: [],
-      data: [],
-    };
+  constructor(
+    private _httpClient: HttpClient
+  ) { }
 
-    const wordsFrequencyArray =
-      filters.localityId === ELocalities.BELO_HORIZONTE
-        ? words_frequency_tweets_bh
-        : words_frequency_tweets_mv;
-
-    wordsFrequencyArray
-      .slice(0, 20)
-      .forEach((word: { count: number; word: string }) => {
-        datasetReturn.labels.push(word.word);
-        datasetReturn.data.push(word.count);
-      });
-
-    return of({
-      labels: datasetReturn.labels,
-      datasets: [
-        {
-          label: "Incidência (Tweets)",
-          data: datasetReturn.data,
-        },
-      ],
-    });
+  wordFrequencyTweets(payload: IFilterIncidenceOfWordsPerJournalists): Observable<any> {
+    return this._httpClient.post(
+      this._BASE_URL + `/incidence-of-words-per-journalists`,
+      payload
+    );
   }
 
   wordFrequencyReplys(filters): Observable<any> {

@@ -1,19 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import Chart from 'chart.js';
-import { mapLocalitiesInitials, mapLocalitiesName } from 'src/app/core/consts';
-import { ELocalities } from 'src/app/core/enums/localities.enum';
-import { DashboardService } from 'src/app/core/services/dashboard.service';
+import { Component, OnInit } from "@angular/core";
+import Chart from "chart.js";
+import { Observable } from "rxjs";
+import { mapLocalitiesInitials, mapLocalitiesName } from "src/app/core/consts";
+import { EIteractionType } from "src/app/core/enums/iteraction-type.enum";
+import { ELocalities } from "src/app/core/enums/localities.enum";
+import { IFilterIncidenceOfWordsPerJournalists } from "src/app/core/interfaces/filter-incidence-of-words-per-journalists.interface";
+import { IJournalist } from "src/app/core/interfaces/journalist-interface";
+import { DashboardService } from "src/app/core/services/dashboard.service";
+import { JournalistService } from "src/app/core/services/journalist.service";
 
 // core components
-import {
-  chartOptions,
-  parseOptions,
-} from "../../variables/charts";
+import { chartOptions, parseOptions } from "../../variables/charts";
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  selector: "app-dashboard",
+  templateUrl: "./dashboard.component.html",
+  styleUrls: ["./dashboard.component.scss"],
 })
 export class DashboardComponent implements OnInit {
   public salesChart;
@@ -38,71 +40,85 @@ export class DashboardComponent implements OnInit {
 
   public maxSizePaginationOptions = 2;
   pageTableWords = 1;
-	pageSizeTableWords = 5;
-	collectionSizeTableWords = 0;
-	words: any[] = [];
+  pageSizeTableWords = 5;
+  collectionSizeTableWords = 0;
+  words: any[] = [];
 
   pageTableJournalists = 1;
-	pageSizeTableJournalists = 5;
-	collectionSizeTableJournalists = 0;
-	journalists: any[] = [];
+  pageSizeTableJournalists = 5;
+  collectionSizeTableJournalists = 0;
+  journalists: any[] = [];
+
+  filtersIncidenceOfWordsPerJournalists: IFilterIncidenceOfWordsPerJournalists;
+  journalists$: Observable<IJournalist[]>;
 
   constructor(
-    private readonly dashboardService: DashboardService
+    private readonly dashboardService: DashboardService,
+    private readonly journalistService: JournalistService
   ) {
     this.refreshWords();
     this.refreshJournalists();
   }
 
   ngOnInit() {
+    this.journalists$ = this.journalistService.listJournalists(
+      ELocalities.BELO_HORIZONTE
+    );
+
     parseOptions(Chart, chartOptions());
 
+    this.filtersIncidenceOfWordsPerJournalists = {
+      journalistId: null,
+      iteractionType: EIteractionType.Tweets,
+      localityId: ELocalities.BELO_HORIZONTE,
+    };
+    this.loadWordFrequencyTweetsChartData();
+
     const filters = { localityId: ELocalities.BELO_HORIZONTE };
-    this.loadWordFrequencyTweetsChartData(filters);
     this.loadWordFrequencyReplysChartData(filters);
     this.loadWordFrequencyLikesChartData(filters);
     this.loadNumberJournalistsByLocationChartData();
   }
-  
-  private loadWordFrequencyTweetsChartData(filters) {
+
+  private loadWordFrequencyTweetsChartData() {
     if (this.wordsChart) {
       this.wordsChart.destroy();
     }
 
-    var chartWordsReference = document.getElementById('chart-words');
+    var chartWordsReference = document.getElementById("chart-words");
 
-    this.dashboardService.wordFrequencyTweets(filters).subscribe({
-      next: (result) => {
-        this.wordsChart = new Chart(chartWordsReference, {
-          type: 'bar',
-          options: {
-            plugins: {
-              legend: {
-                display: true,
-              },
-              title: {
-                display: false
-              }
-            },
-            scales: {
-              r: {
-                pointLabels: {
+    this.dashboardService
+      .wordFrequencyTweets(this.filtersIncidenceOfWordsPerJournalists)
+      .subscribe({
+        next: (result) => {
+          this.wordsChart = new Chart(chartWordsReference, {
+            type: "bar",
+            options: {
+              plugins: {
+                legend: {
                   display: true,
-                  centerPointLabels: true,
-                  font: {
-                    size: 24
+                },
+                title: {
+                  display: false,
+                },
+              },
+              scales: {
+                r: {
+                  pointLabels: {
+                    display: true,
+                    centerPointLabels: true,
+                    font: {
+                      size: 24,
+                    },
                   },
-                }
-              }
+                },
+              },
             },
-          },
-          data: result
-        });
-      },
-      error: () => {
-
-      }
-    });
+            data: result,
+          });
+        },
+        error: () => {},
+      });
   }
 
   private loadWordFrequencyReplysChartData(filters) {
@@ -110,31 +126,29 @@ export class DashboardComponent implements OnInit {
       this.wordsReplysChart.destroy();
     }
 
-    var chartWordsReplysReference = document.getElementById('chart-words-replys');
+    var chartWordsReplysReference =
+      document.getElementById("chart-words-replys");
 
     this.dashboardService.wordFrequencyReplys(filters).subscribe({
       next: (result) => {
         this.wordsReplysChart = new Chart(chartWordsReplysReference, {
-          type: 'bar',
+          type: "bar",
           data: result,
           options: {
-            indexAxis: 'y',
+            indexAxis: "y",
             responsive: true,
             plugins: {
               legend: {
                 display: true,
               },
               title: {
-                display: false
-              }
+                display: false,
+              },
             },
-            
-          }
+          },
         });
       },
-      error: () => {
-
-      }
+      error: () => {},
     });
   }
 
@@ -143,77 +157,84 @@ export class DashboardComponent implements OnInit {
       this.wordsLikesChart.destroy();
     }
 
-    var chartWordsLikesReference = document.getElementById('chart-words-likes');
+    var chartWordsLikesReference = document.getElementById("chart-words-likes");
 
     this.dashboardService.wordFrequencyLikes(filters).subscribe({
       next: (result) => {
         this.wordsLikesChart = new Chart(chartWordsLikesReference, {
-          type: 'bar',
+          type: "bar",
           data: result,
           options: {
-            indexAxis: 'y',
+            indexAxis: "y",
             responsive: true,
             plugins: {
               legend: {
                 display: true,
               },
               title: {
-                display: false
-              }
-            },
-            
-          }
-        });
-      },
-      error: () => {
-
-      }
-    });
-  }
-
-  private loadNumberJournalistsByLocationChartData(){
-    if (this.numberJournalistsChart) {
-      this.numberJournalistsChart.destroy();
-    }
-
-    var chartNumberJournalistsReference = document.getElementById('chart-number-journalists');
-
-    this.dashboardService.numberJournalistsByLocationBar().subscribe({
-      next: (result) => {
-        this.numberJournalistsChart = new Chart(chartNumberJournalistsReference, {
-          type: 'pie',
-          data: result,
-          options: {
-            plugins: {
-              legend: {
-                display: true,
+                display: false,
               },
-              title: {
-                display: false
-              }
-            },
-            scales: {
-              r: {
-                pointLabels: {
-                  display: true,
-                  centerPointLabels: true,
-                  font: {
-                    size: 24
-                  },
-                }
-              }
             },
           },
         });
       },
-      error: () => {
+      error: () => {},
+    });
+  }
 
-      }
+  private loadNumberJournalistsByLocationChartData() {
+    if (this.numberJournalistsChart) {
+      this.numberJournalistsChart.destroy();
+    }
+
+    var chartNumberJournalistsReference = document.getElementById(
+      "chart-number-journalists"
+    );
+
+    this.dashboardService.numberJournalistsByLocationBar().subscribe({
+      next: (result) => {
+        this.numberJournalistsChart = new Chart(
+          chartNumberJournalistsReference,
+          {
+            type: "pie",
+            data: result,
+            options: {
+              plugins: {
+                legend: {
+                  display: true,
+                },
+                title: {
+                  display: false,
+                },
+              },
+              scales: {
+                r: {
+                  pointLabels: {
+                    display: true,
+                    centerPointLabels: true,
+                    font: {
+                      size: 24,
+                    },
+                  },
+                },
+              },
+            },
+          }
+        );
+      },
+      error: () => {},
     });
   }
 
   changeLocalityWordsFrequencyTweetsChart(localityId: number) {
-    this.loadWordFrequencyTweetsChartData({ localityId });
+    this.filtersIncidenceOfWordsPerJournalists.localityId = localityId;
+    this.journalists$ = this.journalistService.listJournalists(localityId);
+    this.filtersIncidenceOfWordsPerJournalists.journalistId = null;
+    this.loadWordFrequencyTweetsChartData();
+  }
+
+  changeJournalistWordsFrequencyTweetsChart(event: IJournalist) {
+    this.loadWordFrequencyTweetsChartData();
   }
 
   changeLocalityWordsFrequencyReplysChart(localityId: number) {
@@ -225,25 +246,32 @@ export class DashboardComponent implements OnInit {
   }
 
   refreshWords() {
-		this.dashboardService.wordsRegisters({page: this.pageTableWords, pageSize: this.pageSizeTableWords}).subscribe({
-      next: (result) => {
-        this.words = result.rows;
-        this.collectionSizeTableWords = result.count;
-      },
-      error: () => {
-
-      }
-    });
-	}
+    this.dashboardService
+      .wordsRegisters({
+        page: this.pageTableWords,
+        pageSize: this.pageSizeTableWords,
+      })
+      .subscribe({
+        next: (result) => {
+          this.words = result.rows;
+          this.collectionSizeTableWords = result.count;
+        },
+        error: () => {},
+      });
+  }
 
   refreshJournalists() {
-		this.dashboardService.journalistsRegisters({page: this.pageTableJournalists, pageSize: this.pageSizeTableJournalists}).subscribe({
-      next: (result) => {
-        this.journalists = result.rows;
-        this.collectionSizeTableJournalists = result.count;
-      },
-      error: () => {}
-    });
-	}
-
+    this.dashboardService
+      .journalistsRegisters({
+        page: this.pageTableJournalists,
+        pageSize: this.pageSizeTableJournalists,
+      })
+      .subscribe({
+        next: (result) => {
+          this.journalists = result.rows;
+          this.collectionSizeTableJournalists = result.count;
+        },
+        error: () => {},
+      });
+  }
 }

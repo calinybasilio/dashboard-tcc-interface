@@ -164,6 +164,18 @@
                 </li>
               </ul>
             </div>
+            <div class="col">
+              <ng-select
+                [items]="journalists$ | async"
+                bindLabel="name"
+                placeholder="Selecionar um Jornalista"
+                autofocus
+                (change)="changeJournalistWordsFrequencyTweetsChart($event)"
+                bindValue="id"
+                [(ngModel)]="filtersIncidenceOfWordsPerJournalists.journalistId"
+              >
+              </ng-select>
+            </div>
           </div>
         </div>
         <div class="card-body">

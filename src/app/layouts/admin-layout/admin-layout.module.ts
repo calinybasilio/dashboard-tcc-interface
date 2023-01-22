@@ -12,12 +12,14 @@ import { UserProfileComponent } from '../../pages/user-profile/user-profile.comp
 import { TablesComponent } from '../../pages/tables/tables.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthenticatedGuard } from 'src/app/core/guards/authenticated.guard';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   imports: [
     CommonModule,
     RouterModule.forChild(AdminLayoutRoutes),
     FormsModule,
+    NgSelectModule,
     HttpClientModule,
     NgbModule,
     ClipboardModule
