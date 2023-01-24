@@ -1,10 +1,11 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { environment } from "src/environments/environment";
 import { CHART_COLORS, mapLocalitiesName } from "../consts";
 import { ELocalities } from "../enums/localities.enum";
 import { IFilterIncidenceOfWordsPerJournalists } from "../interfaces/filter-incidence-of-words-per-journalists.interface";
+import { ITweetsStatistics } from "../interfaces/tweets-statistics-result.interface";
 import {
   users,
   words_frequency_likes_bh,
@@ -13,6 +14,7 @@ import {
   words_frequency_replys_mv,
   words_frequency_tweets_bh,
 } from "../mock/consts";
+import { UtilsService } from "./utils.service";
 
 @Injectable({
   providedIn: "root",
@@ -21,8 +23,14 @@ export class DashboardService {
   private readonly _BASE_URL = `${environment.apiUrl}/dashboard`;
 
   constructor(
-    private _httpClient: HttpClient
+    private _httpClient: HttpClient,
+    private _utilService: UtilsService
   ) { }
+
+  tweetsStatistics(): Observable<any> {
+    const url = this._BASE_URL + '/tweet-statistics';
+    return this._httpClient.get<ITweetsStatistics>(url);
+  }
 
   wordFrequencyTweets(payload: IFilterIncidenceOfWordsPerJournalists): Observable<any> {
     return this._httpClient.post(

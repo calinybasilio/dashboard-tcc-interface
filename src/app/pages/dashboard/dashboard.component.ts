@@ -6,6 +6,7 @@ import { EIteractionType } from "src/app/core/enums/iteraction-type.enum";
 import { ELocalities } from "src/app/core/enums/localities.enum";
 import { IFilterIncidenceOfWordsPerJournalists } from "src/app/core/interfaces/filter-incidence-of-words-per-journalists.interface";
 import { IJournalist } from "src/app/core/interfaces/journalist-interface";
+import { ITweetsStatistics } from "src/app/core/interfaces/tweets-statistics-result.interface";
 import { DashboardService } from "src/app/core/services/dashboard.service";
 import { JournalistService } from "src/app/core/services/journalist.service";
 
@@ -24,6 +25,7 @@ export class DashboardComponent implements OnInit {
   public mapLocalitiesName = mapLocalitiesName;
   public mapLocalitiesInitials = mapLocalitiesInitials;
 
+  public tweetsStatistics: ITweetsStatistics;
   public wordsChart;
   public wordsReplysChart;
   public wordsLikesChart;
@@ -65,6 +67,8 @@ export class DashboardComponent implements OnInit {
       ELocalities.BELO_HORIZONTE
     );
 
+    this.loadTweetsStatistics();
+
     parseOptions(Chart, chartOptions());
 
     this.filtersIncidenceOfWordsPerJournalists = {
@@ -78,6 +82,15 @@ export class DashboardComponent implements OnInit {
     this.loadWordFrequencyReplysChartData(filters);
     this.loadWordFrequencyLikesChartData(filters);
     this.loadNumberJournalistsByLocationChartData();
+  }
+
+  private loadTweetsStatistics(){
+    this.dashboardService.tweetsStatistics().subscribe({
+      next: (result) => {
+        this.tweetsStatistics = result;
+      },
+      error: () => {},
+    });
   }
 
   private loadWordFrequencyTweetsChartData() {
