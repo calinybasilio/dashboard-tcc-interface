@@ -5,6 +5,7 @@ import { environment } from "src/environments/environment";
 import { CHART_COLORS, mapLocalitiesName } from "../consts";
 import { ELocalities } from "../enums/localities.enum";
 import { IFilterIncidenceOfWordsPerJournalists } from "../interfaces/filter-incidence-of-words-per-journalists.interface";
+import { IFilterTweetsPerMonth } from "../interfaces/filter-tweets-per-month.interface";
 import { ITweetsStatistics } from "../interfaces/tweets-statistics-result.interface";
 import {
   users,
@@ -32,9 +33,14 @@ export class DashboardService {
     return this._httpClient.get<ITweetsStatistics>(url);
   }
 
-  tweetsPerMonth(): Observable<any> {
+  tweetsPerMonth(filters: IFilterTweetsPerMonth): Observable<any> {
     const url = this._BASE_URL + '/tweet-per-month';
-    return this._httpClient.get<any>(url);
+    let params = new HttpParams();
+    params = params.set("journalistId", filters.journalistId || "");
+    params = params.set("localityId", filters.localityId || "");
+    let options: any = this._utilService.prepareHeaders();
+    options.params = params;
+    return this._httpClient.get<any>(url, options);
   }
 
   wordFrequencyTweets(payload: IFilterIncidenceOfWordsPerJournalists): Observable<any> {

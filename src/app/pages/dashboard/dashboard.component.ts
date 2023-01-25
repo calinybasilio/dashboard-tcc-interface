@@ -5,6 +5,7 @@ import { mapLocalitiesInitials, mapLocalitiesName } from "src/app/core/consts";
 import { EIteractionType } from "src/app/core/enums/iteraction-type.enum";
 import { ELocalities } from "src/app/core/enums/localities.enum";
 import { IFilterIncidenceOfWordsPerJournalists } from "src/app/core/interfaces/filter-incidence-of-words-per-journalists.interface";
+import { IFilterTweetsPerMonth } from "src/app/core/interfaces/filter-tweets-per-month.interface";
 import { IJournalist } from "src/app/core/interfaces/journalist-interface";
 import { ITweetsStatistics } from "src/app/core/interfaces/tweets-statistics-result.interface";
 import { DashboardService } from "src/app/core/services/dashboard.service";
@@ -32,6 +33,9 @@ export class DashboardComponent implements OnInit {
   public wordsLikesChart;
   public numberJournalistsChart;
 
+  public clickedLocalityBhTweetsPerMonth: boolean = true;
+  public clickedLocalityMvTweetsPerMonth: boolean = false;
+
   public clickedLocalityBhTweets: boolean = true;
   public clickedLocalityMvTweets: boolean = false;
 
@@ -53,7 +57,10 @@ export class DashboardComponent implements OnInit {
   journalists: any[] = [];
 
   filtersIncidenceOfWordsPerJournalists: IFilterIncidenceOfWordsPerJournalists;
+  filtersTweetsPerMonth: IFilterTweetsPerMonth;
+  
   journalists$: Observable<IJournalist[]>;
+  journalistsTweetsPerMonth$: Observable<IJournalist[]>;
 
   constructor(
     private readonly dashboardService: DashboardService,
@@ -68,9 +75,19 @@ export class DashboardComponent implements OnInit {
       ELocalities.BELO_HORIZONTE
     );
 
+    this.journalistsTweetsPerMonth$ = this.journalistService.listJournalists(
+      ELocalities.BELO_HORIZONTE
+    );
+
     parseOptions(Chart, chartOptions());
 
     this.loadTweetsStatistics();
+
+    this.filtersTweetsPerMonth = {
+      journalistId: null,
+      localityId: ELocalities.BELO_HORIZONTE,
+    };
+
     this.loadTweetsPerMonthChartData();
 
     this.filtersIncidenceOfWordsPerJournalists = {
@@ -103,10 +120,10 @@ export class DashboardComponent implements OnInit {
     var chartTweetsPerMonthReference = document.getElementById("chart-tweets-per-month");
 
     this.dashboardService
-      .tweetsPerMonth()
+      .tweetsPerMonth(this.filtersTweetsPerMonth)
       .subscribe({
         next: (result) => {
-          this.wordsChart = new Chart(chartTweetsPerMonthReference, {
+          this.tweetsPerMonthChart = new Chart(chartTweetsPerMonthReference, {
             type: "line",
             options: {
               plugins: {
@@ -289,9 +306,19 @@ export class DashboardComponent implements OnInit {
     this.filtersIncidenceOfWordsPerJournalists.journalistId = null;
     this.loadWordFrequencyTweetsChartData();
   }
-
   changeJournalistWordsFrequencyTweetsChart(event: IJournalist) {
     this.loadWordFrequencyTweetsChartData();
+  }
+
+  changeLocalityTweetsPerMonthChart(localityId: number) {
+    this.filtersTweetsPerMonth.localityId = localityId;
+    this.journalistsTweetsPerMonth$ = this.journalistService.listJournalists(localityId);
+    this.filtersTweetsPerMonth.journalistId = null;
+    this.loadTweetsPerMonthChartData();
+  }
+
+  changeJournalistTweetsPerMonthChart(event: IJournalist) {
+    this.loadTweetsPerMonthChartData();
   }
 
   changeLocalityWordsFrequencyReplysChart(localityId: number) {
