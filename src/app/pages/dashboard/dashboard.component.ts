@@ -27,6 +27,10 @@ export class DashboardComponent implements OnInit {
   public mapLocalitiesInitials = mapLocalitiesInitials;
 
   public tweetsStatistics: ITweetsStatistics;
+  public rangeCollection = {
+    firstCollectionDay: "08 de Fevereiro",
+    lastCollectionDay: "26 de Setembro"
+  };
   public tweetsPerMonthChart;
   public wordsChart;
   public wordsReplysChart;
@@ -58,7 +62,7 @@ export class DashboardComponent implements OnInit {
 
   filtersIncidenceOfWordsPerJournalists: IFilterIncidenceOfWordsPerJournalists;
   filtersTweetsPerMonth: IFilterTweetsPerMonth;
-  
+
   journalists$: Observable<IJournalist[]>;
   journalistsTweetsPerMonth$: Observable<IJournalist[]>;
 
@@ -103,7 +107,7 @@ export class DashboardComponent implements OnInit {
     this.loadNumberJournalistsByLocationChartData();
   }
 
-  private loadTweetsStatistics(){
+  private loadTweetsStatistics() {
     this.dashboardService.tweetsStatistics().subscribe({
       next: (result) => {
         this.tweetsStatistics = result;
@@ -117,42 +121,41 @@ export class DashboardComponent implements OnInit {
       this.tweetsPerMonthChart.destroy();
     }
 
-    var chartTweetsPerMonthReference = document.getElementById("chart-tweets-per-month");
+    var chartTweetsPerMonthReference = document.getElementById(
+      "chart-tweets-per-month"
+    );
 
-    this.dashboardService
-      .tweetsPerMonth(this.filtersTweetsPerMonth)
-      .subscribe({
-        next: (result) => {
-          this.tweetsPerMonthChart = new Chart(chartTweetsPerMonthReference, {
-            type: "line",
-            options: {
-              plugins: {
-                legend: {
-                  display: true,
-                },
-                title: {
-                  display: false,
-                },
+    this.dashboardService.tweetsPerMonth(this.filtersTweetsPerMonth).subscribe({
+      next: (result) => {
+        this.tweetsPerMonthChart = new Chart(chartTweetsPerMonthReference, {
+          type: "line",
+          options: {
+            plugins: {
+              legend: {
+                display: true,
               },
-              scales: {
-                r: {
-                  pointLabels: {
-                    display: true,
-                    centerPointLabels: true,
-                    font: {
-                      size: 24,
-                    },
+              title: {
+                display: false,
+              },
+            },
+            scales: {
+              r: {
+                pointLabels: {
+                  display: true,
+                  centerPointLabels: true,
+                  font: {
+                    size: 24,
                   },
                 },
               },
             },
-            data: result,
-          });
-        },
-        error: () => {},
-      });
+          },
+          data: result,
+        });
+      },
+      error: () => {},
+    });
   }
-
 
   private loadWordFrequencyTweetsChartData() {
     if (this.wordsChart) {
@@ -312,7 +315,8 @@ export class DashboardComponent implements OnInit {
 
   changeLocalityTweetsPerMonthChart(localityId: number) {
     this.filtersTweetsPerMonth.localityId = localityId;
-    this.journalistsTweetsPerMonth$ = this.journalistService.listJournalists(localityId);
+    this.journalistsTweetsPerMonth$ =
+      this.journalistService.listJournalists(localityId);
     this.filtersTweetsPerMonth.journalistId = null;
     this.loadTweetsPerMonthChartData();
   }
