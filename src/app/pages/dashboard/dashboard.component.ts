@@ -26,6 +26,7 @@ export class DashboardComponent implements OnInit {
   public mapLocalitiesInitials = mapLocalitiesInitials;
 
   public tweetsStatistics: ITweetsStatistics;
+  public tweetsPerMonthChart;
   public wordsChart;
   public wordsReplysChart;
   public wordsLikesChart;
@@ -67,9 +68,10 @@ export class DashboardComponent implements OnInit {
       ELocalities.BELO_HORIZONTE
     );
 
-    this.loadTweetsStatistics();
-
     parseOptions(Chart, chartOptions());
+
+    this.loadTweetsStatistics();
+    this.loadTweetsPerMonthChartData();
 
     this.filtersIncidenceOfWordsPerJournalists = {
       journalistId: null,
@@ -92,6 +94,48 @@ export class DashboardComponent implements OnInit {
       error: () => {},
     });
   }
+
+  private loadTweetsPerMonthChartData() {
+    if (this.tweetsPerMonthChart) {
+      this.tweetsPerMonthChart.destroy();
+    }
+
+    var chartTweetsPerMonthReference = document.getElementById("chart-tweets-per-month");
+
+    this.dashboardService
+      .tweetsPerMonth()
+      .subscribe({
+        next: (result) => {
+          this.wordsChart = new Chart(chartTweetsPerMonthReference, {
+            type: "line",
+            options: {
+              plugins: {
+                legend: {
+                  display: true,
+                },
+                title: {
+                  display: false,
+                },
+              },
+              scales: {
+                r: {
+                  pointLabels: {
+                    display: true,
+                    centerPointLabels: true,
+                    font: {
+                      size: 24,
+                    },
+                  },
+                },
+              },
+            },
+            data: result,
+          });
+        },
+        error: () => {},
+      });
+  }
+
 
   private loadWordFrequencyTweetsChartData() {
     if (this.wordsChart) {

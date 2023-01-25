@@ -32,6 +32,11 @@ export class DashboardService {
     return this._httpClient.get<ITweetsStatistics>(url);
   }
 
+  tweetsPerMonth(): Observable<any> {
+    const url = this._BASE_URL + '/tweet-per-month';
+    return this._httpClient.get<any>(url);
+  }
+
   wordFrequencyTweets(payload: IFilterIncidenceOfWordsPerJournalists): Observable<any> {
     return this._httpClient.post(
       this._BASE_URL + `/incidence-of-words-per-journalists`,
