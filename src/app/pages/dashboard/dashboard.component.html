@@ -621,6 +621,65 @@
             <div class="col">
               <h3 class="mb-0">Palavras</h3>
             </div>
+
+            <div class="col">
+              <ul class="nav nav-pills justify-content-end">
+                <li
+                  class="nav-item mr-2 mr-md-0"
+                  data-toggle="chart"
+                  data-target="#chart-words"
+                  (click)="
+                    changeLocalityRefreshWords(eLocalities.BELO_HORIZONTE)
+                  "
+                >
+                  <a
+                    href="javascript:void(0)"
+                    class="nav-link py-2 px-3"
+                    [ngClass]="{
+                      active: clickedLocalityBhRefreshWords === true
+                    }"
+                    data-toggle="tab"
+                    (click)="
+                      clickedLocalityBhRefreshWords = true;
+                      clickedLocalityMvRefreshWords = false
+                    "
+                  >
+                    <span class="d-none d-md-block">{{
+                      mapLocalitiesName[eLocalities.BELO_HORIZONTE]
+                    }}</span>
+                    <span class="d-md-none">{{
+                      mapLocalitiesInitials[eLocalities.BELO_HORIZONTE]
+                    }}</span>
+                  </a>
+                </li>
+                <li
+                  class="nav-item"
+                  data-toggle="chart"
+                  data-target="#chart-words"
+                  (click)="changeLocalityRefreshWords(eLocalities.MONTEVIDEO)"
+                >
+                  <a
+                    href="javascript:void(0)"
+                    class="nav-link py-2 px-3"
+                    [ngClass]="{
+                      active: clickedLocalityMvRefreshWords === true
+                    }"
+                    data-toggle="tab"
+                    (click)="
+                      clickedLocalityBhRefreshWords = false;
+                      clickedLocalityMvRefreshWords = true
+                    "
+                  >
+                    <span class="d-none d-md-block">{{
+                      mapLocalitiesName[eLocalities.MONTEVIDEO]
+                    }}</span>
+                    <span class="d-md-none">{{
+                      mapLocalitiesInitials[eLocalities.MONTEVIDEO]
+                    }}</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
         <div class="table-responsive">
@@ -628,13 +687,13 @@
             <thead class="thead-light">
               <tr>
                 <th scope="col">Palavra</th>
-                <th scope="col">Incidência</th>
+                <th scope="col">Incidência (Tweets)</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let word of words">
                 <td>{{ word.word }}</td>
-                <th>{{ word.count }}</th>
+                <th>{{ word.sum }}</th>
               </tr>
             </tbody>
           </table>

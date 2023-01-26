@@ -10,6 +10,7 @@ import { IJournalist } from "src/app/core/interfaces/journalist-interface";
 import { ITweetsStatistics } from "src/app/core/interfaces/tweets-statistics-result.interface";
 import { DashboardService } from "src/app/core/services/dashboard.service";
 import { JournalistService } from "src/app/core/services/journalist.service";
+import { WordService } from "src/app/core/services/word.service";
 
 // core components
 import { chartOptions, parseOptions } from "../../variables/charts";
@@ -29,7 +30,7 @@ export class DashboardComponent implements OnInit {
   public tweetsStatistics: ITweetsStatistics;
   public rangeCollection = {
     firstCollectionDay: "08 de Fevereiro",
-    lastCollectionDay: "26 de Setembro"
+    lastCollectionDay: "26 de Setembro",
   };
   public tweetsPerMonthChart;
   public wordsChart;
@@ -49,6 +50,9 @@ export class DashboardComponent implements OnInit {
   public clickedLocalityBhLikes: boolean = true;
   public clickedLocalityMvLikes: boolean = false;
 
+  public clickedLocalityBhRefreshWords: boolean = true;
+  public clickedLocalityMvRefreshWords: boolean = false;
+
   public maxSizePaginationOptions = 2;
   pageTableWords = 1;
   pageSizeTableWords = 5;
@@ -62,13 +66,15 @@ export class DashboardComponent implements OnInit {
 
   filtersIncidenceOfWordsPerJournalists: IFilterIncidenceOfWordsPerJournalists;
   filtersTweetsPerMonth: IFilterTweetsPerMonth;
+  localityRefreshWords = ELocalities.BELO_HORIZONTE;
 
   journalists$: Observable<IJournalist[]>;
   journalistsTweetsPerMonth$: Observable<IJournalist[]>;
 
   constructor(
     private readonly dashboardService: DashboardService,
-    private readonly journalistService: JournalistService
+    private readonly journalistService: JournalistService,
+    private readonly wordService: WordService
   ) {
     this.refreshWords();
     this.refreshJournalists();
@@ -333,11 +339,20 @@ export class DashboardComponent implements OnInit {
     this.loadWordFrequencyLikesChartData({ localityId });
   }
 
+  changeLocalityRefreshWords(localityId: number) {
+    this.localityRefreshWords = localityId;
+    this.refreshWords();
+  }
+
   refreshWords() {
-    this.dashboardService
-      .wordsRegisters({
-        page: this.pageTableWords,
-        pageSize: this.pageSizeTableWords,
+    this.wordService
+      .listRegisters({
+        localityId: this.localityRefreshWords,
+        limit: this.pageSizeTableWords,
+        offset:
+          this.pageTableWords > 1
+            ? this.pageSizeTableWords * (this.pageTableWords - 1)
+            : 0,
       })
       .subscribe({
         next: (result) => {

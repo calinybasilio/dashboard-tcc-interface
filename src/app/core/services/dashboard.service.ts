@@ -13,7 +13,6 @@ import {
   words_frequency_likes_mv,
   words_frequency_replys_bh,
   words_frequency_replys_mv,
-  words_frequency_tweets_bh,
 } from "../mock/consts";
 import { UtilsService } from "./utils.service";
 
@@ -26,15 +25,15 @@ export class DashboardService {
   constructor(
     private _httpClient: HttpClient,
     private _utilService: UtilsService
-  ) { }
+  ) {}
 
   tweetsStatistics(): Observable<any> {
-    const url = this._BASE_URL + '/tweet-statistics';
+    const url = this._BASE_URL + "/tweet-statistics";
     return this._httpClient.get<ITweetsStatistics>(url);
   }
 
   tweetsPerMonth(filters: IFilterTweetsPerMonth): Observable<any> {
-    const url = this._BASE_URL + '/tweet-per-month';
+    const url = this._BASE_URL + "/tweet-per-month";
     let params = new HttpParams();
     params = params.set("journalistId", filters.journalistId || "");
     params = params.set("localityId", filters.localityId || "");
@@ -43,7 +42,9 @@ export class DashboardService {
     return this._httpClient.get<any>(url, options);
   }
 
-  wordFrequencyTweets(payload: IFilterIncidenceOfWordsPerJournalists): Observable<any> {
+  wordFrequencyTweets(
+    payload: IFilterIncidenceOfWordsPerJournalists
+  ): Observable<any> {
     return this._httpClient.post(
       this._BASE_URL + `/incidence-of-words-per-journalists`,
       payload
@@ -129,23 +130,12 @@ export class DashboardService {
         {
           label: "Jornalistas",
           data: [countBh, countMv],
-          backgroundColor: [CHART_COLORS.orange]
+          backgroundColor: [CHART_COLORS.orange],
         },
       ],
     };
 
     return of(result);
-  }
-
-  wordsRegisters(filter: { page: number; pageSize: number }): Observable<any> {
-    const words = words_frequency_tweets_bh
-      .map((country, i) => ({ id: i + 1, ...country }))
-      .slice(
-        (filter.page - 1) * filter.pageSize,
-        (filter.page - 1) * filter.pageSize + filter.pageSize
-      );
-
-    return of({ rows: words, count: words_frequency_tweets_bh.length });
   }
 
   journalistsRegisters(filter: {
