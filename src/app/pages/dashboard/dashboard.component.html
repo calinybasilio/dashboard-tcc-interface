@@ -142,6 +142,32 @@
               </h6>
               <h2 class="text-white mb-0">Top 20 com maior Incidência</h2>
             </div>
+          </div>
+          <div class="row align-items-center">
+            <div class="col">
+              <ng-select
+                [items]="months"
+                bindLabel="month"
+                placeholder="Selecionar um Mês"
+                autofocus
+                (change)="changeMonthWordsFrequencyTweetsChart($event)"
+                bindValue="value"
+                [(ngModel)]="filtersIncidenceOfWordsPerJournalists.month"
+              >
+              </ng-select>
+            </div>
+            <div class="col">
+              <ng-select
+                [items]="journalists$ | async"
+                bindLabel="name"
+                placeholder="Selecionar um Jornalista"
+                autofocus
+                (change)="changeJournalistWordsFrequencyTweetsChart($event)"
+                bindValue="id"
+                [(ngModel)]="filtersIncidenceOfWordsPerJournalists.journalistId"
+              >
+              </ng-select>
+            </div>
             <div class="col">
               <ul class="nav nav-pills justify-content-end">
                 <li
@@ -202,18 +228,6 @@
                 </li>
               </ul>
             </div>
-            <div class="col">
-              <ng-select
-                [items]="journalists$ | async"
-                bindLabel="name"
-                placeholder="Selecionar um Jornalista"
-                autofocus
-                (change)="changeJournalistWordsFrequencyTweetsChart($event)"
-                bindValue="id"
-                [(ngModel)]="filtersIncidenceOfWordsPerJournalists.journalistId"
-              >
-              </ng-select>
-            </div>
           </div>
         </div>
         <div class="card-body">
@@ -271,6 +285,18 @@
             <div class="col">
               <h6 class="text-uppercase text-muted ls-1 mb-1">Coleta</h6>
               <h2 class="mb-0">Número de tweets coletados por Mês</h2>
+            </div>
+            <div class="col">
+              <ng-select
+                [items]="journalistsTweetsPerMonth$ | async"
+                bindLabel="name"
+                placeholder="Selecionar um Jornalista"
+                autofocus
+                (change)="changeJournalistTweetsPerMonthChart($event)"
+                bindValue="id"
+                [(ngModel)]="filtersTweetsPerMonth.journalistId"
+              >
+              </ng-select>
             </div>
             <div class="col">
               <ul class="nav nav-pills justify-content-end">
@@ -334,18 +360,7 @@
                 </li>
               </ul>
             </div>
-            <div class="col">
-              <ng-select
-                [items]="journalistsTweetsPerMonth$ | async"
-                bindLabel="name"
-                placeholder="Selecionar um Jornalista"
-                autofocus
-                (change)="changeJournalistTweetsPerMonthChart($event)"
-                bindValue="id"
-                [(ngModel)]="filtersTweetsPerMonth.journalistId"
-              >
-              </ng-select>
-            </div>
+           
           </div>
         </div>
         <div class="card-body">

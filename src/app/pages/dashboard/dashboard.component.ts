@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import Chart from "chart.js";
 import { Observable } from "rxjs";
-import { mapLocalitiesInitials, mapLocalitiesName } from "src/app/core/consts";
+import { mapLocalitiesInitials, mapLocalitiesName, months } from "src/app/core/consts";
 import { EIteractionType } from "src/app/core/enums/iteraction-type.enum";
 import { ELocalities } from "src/app/core/enums/localities.enum";
 import { IFilterIncidenceOfWordsPerJournalists } from "src/app/core/interfaces/filter-incidence-of-words-per-journalists.interface";
@@ -71,6 +71,8 @@ export class DashboardComponent implements OnInit {
   journalists$: Observable<IJournalist[]>;
   journalistsTweetsPerMonth$: Observable<IJournalist[]>;
 
+  months = months;
+  
   constructor(
     private readonly dashboardService: DashboardService,
     private readonly journalistService: JournalistService,
@@ -104,6 +106,7 @@ export class DashboardComponent implements OnInit {
       journalistId: null,
       iteractionType: EIteractionType.Tweets,
       localityId: ELocalities.BELO_HORIZONTE,
+      month: null
     };
     this.loadWordFrequencyTweetsChartData();
 
@@ -315,6 +318,11 @@ export class DashboardComponent implements OnInit {
     this.filtersIncidenceOfWordsPerJournalists.journalistId = null;
     this.loadWordFrequencyTweetsChartData();
   }
+
+  changeMonthWordsFrequencyTweetsChart(event: any) {
+    this.loadWordFrequencyTweetsChartData();
+  }
+  
   changeJournalistWordsFrequencyTweetsChart(event: IJournalist) {
     this.loadWordFrequencyTweetsChartData();
   }
