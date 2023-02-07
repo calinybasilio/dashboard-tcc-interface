@@ -177,6 +177,16 @@
               </ng-select>
             </div>
             <div class="col">
+              <ng-select
+                [items]="words$"
+                bindLabel="name"
+                placeholder="Selecionar uma Palavra"
+                autofocus
+                bindValue="id"
+              >
+              </ng-select>
+            </div>
+            <div class="col">
               <ul class="nav nav-pills justify-content-end">
                 <li
                   class="nav-item mr-2 mr-md-0"
